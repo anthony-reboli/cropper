@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Decouper</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/cropper.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/cropper.css">
+</head>
+<body>
+	<div> 
+		<img src="img/f.jpg" width="300px" id="image">
+		
+	</div>
+
+	<form enctype="multipart/form-data" method ="POST">
+		<input type="file" name="img" id="img">
+		<button id="sendPic" type="button">Ok</button>
+	</form>
+	<script type="text/javascript">
+		$(function($){
+			$("input[name='img']").on("change",function(){
+				var image = document.getElementById('image')
+				var files = $(this)[0].files
+				var file = files[0]
+				$("#image").attr("src",window.URL.createObjectURL(file))
+				var cropper = new Cropper(image,
+				{
+					aspectRatio:4/3
+				})
+				cropper.crop()
+				$("button").on("click",function()
+				{
+
+						cropper.getCroppedCanvas().toBlob(function(blob)
+						{
+
+							var formData = new FormData();
+							formData.append("croppedImage", blob);
+							
+							
+							$.ajax({
+										type:"POST",
+							 			url:"img/crop.php",
+							 			data:formData,
+							 			processData:false,
+							 			contentType:false,
+									  
+
+									}).done(function(data) {
+									   console.log(data);
+									   console.log('rentre');
+									});
+							
+						})
+
+
+				})
+			})
+			
+		})
+
+
+	</script>
+
+</body>
+</html>
