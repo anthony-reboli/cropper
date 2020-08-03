@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+	<title>Decouper</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/cropper.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/cropper.css">
+</head>
+<body>
+	<div class="img-up"> 
+		<img src="img/f.jpg" width="1000px" id="image">
+		
+	</div>
+   <div class="container">
+		<form enctype="multipart/form-data" method ="POST">
+			<div class="custom-file">
+			<input type="file" name="img" class="custom-file-input" id="img">
+			 <label class="custom-file-label" for="customFile">Choose file</label>
+			</div>
+			<button type="button" class="btn btn-success" id="sendPic">Valider</button>
+		</form>
+	</div>
+	<script type="text/javascript">
+		$(function($){
+			$("input[name='img']").on("change",function(){
+				var image = document.getElementById('image')
+				var files = $(this)[0].files
+				var file = files[0]
+				$("#image").attr("src",window.URL.createObjectURL(file))
+				var cropper = new Cropper(image,
+				{
+					aspectRatio:4/3
+				})
+				cropper.crop()
+				$("button").on("click",function()
+				{
+
+						cropper.getCroppedCanvas().toBlob(function(blob)
+						{
+
+							var formData = new FormData();
+							formData.append("croppedImage", blob);
+							
+							
+							$.ajax({
+										type:"POST",
+							 			url:"img/crop.php",
+							 			data:formData,
+							 			processData:false,
+							 			contentType:false,
+									  
+
+									}).done(function(data) {
+									   console.log(data);
+									   console.log('rentre');
+									});
+							
+						})
+
+
+				})
+			})
+			
+		})
+
+
+	</script>
+
+</body>
+</html>
